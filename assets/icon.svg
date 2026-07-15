@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb03a" />
+      <stop offset="100%" stop-color="#ff3e6c" />
+    </linearGradient>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#cbd5e1" stop-opacity="0.75" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#skyGrad)" />
+  <!-- Neon Glow Backplate -->
+  <circle cx="256" cy="256" r="140" fill="url(#glowGrad)" opacity="0.25" filter="url(#glow)" />
+  <!-- Neon accent ring -->
+  <rect x="24" y="24" width="464" height="464" rx="88" fill="none" stroke="url(#glowGrad)" stroke-width="3" opacity="0.2" />
+  <!-- Sun -->
+  <circle cx="310" cy="210" r="56" fill="url(#sunGrad)" />
+  <!-- Cloud -->
+  <path d="M190 350 h140 c27.6 0 50-22.4 50-50 s-22.4-50-50-50 c-2 0-4 0-6 .2 c-12-32-43-55.2-79-55.2 c-42 0-77.2 29-84.6 68.6 c-6-3.6-13-5.6-20.4-5.6 c-24.8 0-45 20.2-45 45 s20.2 47 45 47 z" fill="url(#cloudGrad)" filter="url(#glow)" />
+</svg>

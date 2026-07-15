@@ -1,0 +1,18 @@
+{
+  "name": "AeroSky Multi-API Explorer",
+  "short_name": "APIExplorer",
+  "description": "Premium glassmorphic sandbox to test and explorer public API endpoints step-by-step.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#060613",
+  "theme_color": "#060613",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

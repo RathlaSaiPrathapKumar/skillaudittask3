@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AeroSky | Multi-API Sandbox</title>
+  
+  <!-- SEO & Mobile Config -->
+  <meta name="description" content="An interactive, premium multi-API sandbox console testing weather, news, movies, quotes, and GitHub integrations.">
+  <meta name="theme-color" content="#060613">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Styling -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient backdrop lights -->
+  <div class="ambient-glow" id="ambientGlow"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="assets/icon.svg" alt="AeroSky Logo" class="brand-logo">
+        <div>
+          <h1>AeroSky</h1>
+          <span class="sub-brand">API Explorer Console</span>
+        </div>
+      </div>
+      
+      <!-- Connectivity Status Badge -->
+      <div class="connection-status-wrapper">
+        <div id="connectionBadge" class="connection-badge online">
+          <span class="badge-dot"></span>
+          <span class="badge-text">Console Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="workspace-grid">
+      <!-- Left Sidebar: API Selection Steps -->
+      <aside class="sidebar-panel glass-panel">
+        <h2 class="sidebar-title">Step-by-Step APIs</h2>
+        <nav class="api-steps-nav" id="apiNav">
+          <button class="step-nav-btn active" data-target="weather">
+            <span class="step-number">01</span>
+            <span class="step-label"><i data-lucide="cloud-sun"></i> Live Weather</span>
+          </button>
+          
+          <button class="step-nav-btn" data-target="news">
+            <span class="step-number">02</span>
+            <span class="step-label"><i data-lucide="newspaper"></i> Space News</span>
+          </button>
+          
+          <button class="step-nav-btn" data-target="shows">
+            <span class="step-number">03</span>
+            <span class="step-label"><i data-lucide="film"></i> TV Shows</span>
+          </button>
+          
+          <button class="step-nav-btn" data-target="quotes">
+            <span class="step-number">04</span>
+            <span class="step-label"><i data-lucide="quote"></i> Daily Quotes</span>
+          </button>
+          
+          <button class="step-nav-btn" data-target="github">
+            <span class="step-number">05</span>
+            <span class="step-label"><i data-lucide="github"></i> GitHub Profiles</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Console Panel -->
+      <main class="console-body" id="consoleBody">
+        
+        <!-- STEP 1: WEATHER API PANEL -->
+        <div class="api-panel active" id="panel-weather">
+          <div class="panel-header glass-panel">
+            <div class="panel-title-area">
+              <span class="method-badge get">GET</span>
+              <code class="endpoint-url">https://api.open-meteo.com/v1/forecast</code>
+            </div>
+            <p class="panel-description">Queries global coordinates to render micro-climate data, including apparent temperature, relative humidity, wind velocity, and precipitation indicators.</p>
+          </div>
+
+          <div class="panel-controls glass-panel">
+            <div class="inputs-row">
+              <div class="input-field-group">
+                <label for="weatherLat">Latitude</label>
+                <input type="number" id="weatherLat" value="40.7128" step="0.0001" placeholder="40.7128">
+              </div>
+              <div class="input-field-group">
+                <label for="weatherLon">Longitude</label>
+                <input type="number" id="weatherLon" value="-74.0060" step="0.0001" placeholder="-74.0060">
+              </div>
+              <button class="quick-preset-btn glass-btn" id="weatherGeoLocateBtn" title="Detect Location">
+                <i data-lucide="map-pin"></i>
+              </button>
+            </div>
+            <button class="glass-btn primary-btn execute-btn" id="btn-fetch-weather">
+              <i data-lucide="play"></i> Execute API Call
+            </button>
+          </div>
+
+          <!-- Weather Results Container -->
+          <div class="results-container" id="results-weather">
+            <!-- Idle -->
+            <div class="state-idle">
+              <div class="idle-graphic"><i data-lucide="server"></i></div>
+              <h3>API Response Pending</h3>
+              <p>Set latitude/longitude parameters and hit "Execute API Call" to initiate fetching.</p>
+            </div>
+            <!-- Loading -->
+            <div class="state-loading" style="display: none;">
+              <div class="glass-panel skeleton-weather-main">
+                <div class="skeleton sk-header"></div>
+                <div class="skeleton sk-temp"></div>
+                <div class="skeleton-grid-2">
+                  <div class="skeleton sk-pill"></div>
+                  <div class="skeleton sk-pill"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Error -->
+            <div class="state-error" style="display: none;">
+              <div class="error-alert glass-panel">
+                <i data-lucide="alert-triangle" class="err-icon"></i>
+                <h4 class="err-title">Query Failure</h4>
+                <p class="err-msg">Failed to query open-meteo weather details. Check internet connectivity.</p>
+              </div>
+            </div>
+            <!-- Success -->
+            <div class="state-success" style="display: none;">
+              <!-- Target dynamically loaded -->
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: SPACE NEWS API PANEL -->
+        <div class="api-panel" id="panel-news">
+          <div class="panel-header glass-panel">
+            <div class="panel-title-area">
+              <span class="method-badge get">GET</span>
+              <code class="endpoint-url">https://api.spaceflightnewsapi.net/v4/articles/</code>
+            </div>
+            <p class="panel-description">Fetches trending news articles relating to orbital flights, spacecraft, and planetary exploration.</p>
+          </div>
+
+          <div class="panel-controls glass-panel">
+            <div class="inputs-row">
+              <div class="input-field-group">
+                <label for="newsLimit">Fetch Count</label>
+                <select id="newsLimit">
+                  <option value="5" selected>5 Articles</option>
+                  <option value="10">10 Articles</option>
+                  <option value="15">15 Articles</option>
+                </select>
+              </div>
+            </div>
+            <button class="glass-btn primary-btn execute-btn" id="btn-fetch-news">
+              <i data-lucide="play"></i> Execute API Call
+            </button>
+          </div>
+
+          <!-- News Results Container -->
+          <div class="results-container" id="results-news">
+            <!-- Idle -->
+            <div class="state-idle">
+              <div class="idle-graphic"><i data-lucide="server"></i></div>
+              <h3>API Response Pending</h3>
+              <p>Click the execute button to dispatch request and query live aerospace updates.</p>
+            </div>
+            <!-- Loading -->
+            <div class="state-loading" style="display: none;">
+              <div class="skeleton-news-list">
+                <div class="glass-panel skeleton-news-item"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton sk-line-h"></div><div class="skeleton sk-line-p"></div></div></div>
+                <div class="glass-panel skeleton-news-item"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton sk-line-h"></div><div class="skeleton sk-line-p"></div></div></div>
+              </div>
+            </div>
+            <!-- Error -->
+            <div class="state-error" style="display: none;">
+              <div class="error-alert glass-panel">
+                <i data-lucide="alert-triangle" class="err-icon"></i>
+                <h4 class="err-title">Query Failure</h4>
+                <p class="err-msg">Failed to query articles directory. Ensure network access.</p>
+              </div>
+            </div>
+            <!-- Success -->
+            <div class="state-success" style="display: none;">
+              <!-- News Feed items scrollable -->
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: TV SHOWS SEARCH API PANEL -->
+        <div class="api-panel" id="panel-shows">
+          <div class="panel-header glass-panel">
+            <div class="panel-title-area">
+              <span class="method-badge get">GET</span>
+              <code class="endpoint-url">https://api.tvmaze.com/search/shows</code>
+            </div>
+            <p class="panel-description">Dispatches keyword matches to scan TVMaze's database. Renders TV posters, descriptions, runtime schedules, and rating marks.</p>
+          </div>
+
+          <div class="panel-controls glass-panel">
+            <div class="inputs-row">
+              <div class="input-field-group keyword-search">
+                <label for="showQuery">Search Term</label>
+                <div class="input-icon-wrapper">
+                  <i data-lucide="film" class="ctrl-icon"></i>
+                  <input type="text" id="showQuery" value="space" placeholder="e.g. Star Trek, Witcher, Batman">
+                </div>
+              </div>
+            </div>
+            <button class="glass-btn primary-btn execute-btn" id="btn-fetch-shows">
+              <i data-lucide="play"></i> Execute API Call
+            </button>
+          </div>
+
+          <!-- Shows Results Container -->
+          <div class="results-container" id="results-shows">
+            <!-- Idle -->
+            <div class="state-idle">
+              <div class="idle-graphic"><i data-lucide="server"></i></div>
+              <h3>API Response Pending</h3>
+              <p>Type a title keyword and execute the API call to load cinema records.</p>
+            </div>
+            <!-- Loading -->
+            <div class="state-loading" style="display: none;">
+              <div class="skeleton-show-grid">
+                <div class="glass-panel skeleton-show-card"><div class="skeleton sk-poster"></div><div class="skeleton sk-text-s"></div></div>
+                <div class="glass-panel skeleton-show-card"><div class="skeleton sk-poster"></div><div class="skeleton sk-text-s"></div></div>
+                <div class="glass-panel skeleton-show-card"><div class="skeleton sk-poster"></div><div class="skeleton sk-text-s"></div></div>
+              </div>
+            </div>
+            <!-- Error -->
+            <div class="state-error" style="display: none;">
+              <div class="error-alert glass-panel">
+                <i data-lucide="alert-triangle" class="err-icon"></i>
+                <h4 class="err-title">Query Failure</h4>
+                <p class="err-msg">Failed to query show directory. Ensure connection integrity.</p>
+              </div>
+            </div>
+            <!-- Success -->
+            <div class="state-success" style="display: none;">
+              <!-- Movies cards grids -->
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: DAILY QUOTES API PANEL -->
+        <div class="api-panel" id="panel-quotes">
+          <div class="panel-header glass-panel">
+            <div class="panel-title-area">
+              <span class="method-badge get">GET</span>
+              <code class="endpoint-url">https://dummyjson.com/quotes</code>
+            </div>
+            <p class="panel-description">Fetches a package of selected philosophy quotes with author credits, rendering them as beautifully styled quotation cards.</p>
+          </div>
+
+          <div class="panel-controls glass-panel">
+            <div class="inputs-row">
+              <div class="input-field-group">
+                <label for="quoteLimit">Limit</label>
+                <select id="quoteLimit">
+                  <option value="5" selected>5 Quotes</option>
+                  <option value="10">10 Quotes</option>
+                  <option value="20">20 Quotes</option>
+                </select>
+              </div>
+            </div>
+            <button class="glass-btn primary-btn execute-btn" id="btn-fetch-quotes">
+              <i data-lucide="play"></i> Execute API Call
+            </button>
+          </div>
+
+          <!-- Quotes Results Container -->
+          <div class="results-container" id="results-quotes">
+            <!-- Idle -->
+            <div class="state-idle">
+              <div class="idle-graphic"><i data-lucide="server"></i></div>
+              <h3>API Response Pending</h3>
+              <p>Dispatch request to retrieve random quote decks.</p>
+            </div>
+            <!-- Loading -->
+            <div class="state-loading" style="display: none;">
+              <div class="skeleton-quotes-deck">
+                <div class="glass-panel skeleton-quote-card"><div class="skeleton sk-quote-l1"></div><div class="skeleton sk-quote-l2"></div><div class="skeleton sk-quote-auth"></div></div>
+              </div>
+            </div>
+            <!-- Error -->
+            <div class="state-error" style="display: none;">
+              <div class="error-alert glass-panel">
+                <i data-lucide="alert-triangle" class="err-icon"></i>
+                <h4 class="err-title">Query Failure</h4>
+                <p class="err-msg">Failed to query daily quotations. Verify internet link.</p>
+              </div>
+            </div>
+            <!-- Success -->
+            <div class="state-success" style="display: none;">
+              <!-- Dynamic Quotes lists -->
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: GITHUB USERS API PANEL -->
+        <div class="api-panel" id="panel-github">
+          <div class="panel-header glass-panel">
+            <div class="panel-title-area">
+              <span class="method-badge get">GET</span>
+              <code class="endpoint-url">https://api.github.com/users/{username}</code>
+            </div>
+            <p class="panel-description">Fetches details from the GitHub User API, mapping avatar pictures, handle names, repo counts, follower figures, and direct links.</p>
+          </div>
+
+          <div class="panel-controls glass-panel">
+            <div class="inputs-row">
+              <div class="input-field-group keyword-search">
+                <label for="githubUser">GitHub Username</label>
+                <div class="input-icon-wrapper">
+                  <i data-lucide="github" class="ctrl-icon"></i>
+                  <input type="text" id="githubUser" value="octocat" placeholder="e.g. torvalds, gaearon, octocat">
+                </div>
+              </div>
+            </div>
+            <button class="glass-btn primary-btn execute-btn" id="btn-fetch-github">
+              <i data-lucide="play"></i> Execute API Call
+            </button>
+          </div>
+
+          <!-- GitHub Results Container -->
+          <div class="results-container" id="results-github">
+            <!-- Idle -->
+            <div class="state-idle">
+              <div class="idle-graphic"><i data-lucide="server"></i></div>
+              <h3>API Response Pending</h3>
+              <p>Type a developer handle and click the trigger to extract profile statistics.</p>
+            </div>
+            <!-- Loading -->
+            <div class="state-loading" style="display: none;">
+              <div class="glass-panel skeleton-git-profile">
+                <div class="skeleton sk-avatar"></div>
+                <div class="sk-desc"><div class="skeleton sk-git-name"></div><div class="skeleton sk-git-bio"></div></div>
+              </div>
+            </div>
+            <!-- Error -->
+            <div class="state-error" style="display: none;">
+              <div class="error-alert glass-panel">
+                <i data-lucide="alert-triangle" class="err-icon"></i>
+                <h4 class="err-title" id="gitErrorTitle">Query Failure</h4>
+                <p class="err-msg" id="gitErrorMsg">Failed to pull details from GitHub APIs. Confirm connection or profile spelling.</p>
+              </div>
+            </div>
+            <!-- Success -->
+            <div class="state-success" style="display: none;">
+              <!-- Dev card profiles -->
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 AeroSky API Explorer. Hosted Offline via Service Worker. Powered by public endpoints.</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript file -->
+  <script src="app.js"></script>
+</body>
+</html>
